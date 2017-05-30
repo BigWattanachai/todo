@@ -1,9 +1,12 @@
 package com.ascend.todolist.services;
 
 import com.ascend.todolist.entities.Todo;
+import com.ascend.todolist.exceptions.TodoNotFoundException;
 import com.ascend.todolist.repositories.TodoRepo;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -14,6 +17,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +32,9 @@ public class TodoServiceTest {
 
     @Mock
     private TodoRepo todoRepo;
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
 
     private Todo todo1;
     private Todo todo2;
@@ -69,4 +78,50 @@ public class TodoServiceTest {
         verify(todoRepo).findAll();
     }
 
+    @Test
+    public void shouldReturnTodoWhenGetExistingTodoInDbWithId() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(todo1);
+
+        Todo TodoResponse = todoService.getTodoById(1L);
+        assertThat(TodoResponse.getContent(), is("todo1"));
+        assertThat(TodoResponse.getId(), is(1L));
+
+        verify(todoRepo).findOne(anyLong());
+    }
+
+    @Test
+    public void shouldThrowTodoExceptionWhenGetNonExistTodoInDb() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo id 1 is not found");
+        todoService.getTodoById(1L);
+
+        verify(todoRepo).findOne(anyLong());
+    }
+
+    @Test
+    public void shouldReturnTodoWhenUpdateExistingTodoSuccessfully() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(todo1);
+        when(todoRepo.saveAndFlush(any(Todo.class))).thenReturn(todo1);
+
+        Todo TodoResponse = todoService.updateTodo(1L, todo1);
+        assertThat(TodoResponse.getId(), is(1L));
+        assertThat(TodoResponse.getContent(), is("todo1"));
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoRepo).saveAndFlush(any(Todo.class));
+    }
+
+    @Test
+    public void shouldThrowTodoExceptionWhenUpdateNonExistTodoInDb() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo id 1 is not found");
+        todoService.updateTodo(1L, todo1);
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoRepo, never()).saveAndFlush(any(Todo.class));
+    }
 }

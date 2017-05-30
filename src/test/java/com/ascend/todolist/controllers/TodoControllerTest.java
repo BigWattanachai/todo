@@ -16,10 +16,12 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,5 +80,32 @@ public class TodoControllerTest {
                 .andExpect(status().isOk());
 
         verify(todoService).createTodo(any(Todo.class));
+    }
+
+    @Test
+    public void shouldReturnTodoWhenGetExistingTodoById() throws Exception {
+        when(todoService.getTodoById(anyLong())).thenReturn(todo1);
+
+        mvc.perform(get("/api/v1/todos/1"))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("todo1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).getTodoById(anyLong());
+    }
+
+
+    @Test
+    public void shouldReturnTodoWhenUpdateExistingTodoSuccessfully() throws Exception {
+        when(todoService.updateTodo(anyLong(),any(Todo.class))).thenReturn(todo1);
+
+        mvc.perform(put("/api/v1/todos/1")
+                .content(mapper.writeValueAsString(todo1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("todo1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).updateTodo(anyLong(),any(Todo.class));
     }
 }
