@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,5 +124,30 @@ public class TodoServiceTest {
 
         verify(todoRepo).findOne(anyLong());
         verify(todoRepo, never()).saveAndFlush(any(Todo.class));
+    }
+
+    @Test
+    public void shouldReturnTodoWhenDeleteExistingTodoInDbWithId() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(todo1);
+        doNothing().when(todoRepo).delete(Matchers.any(Todo.class));
+
+        Todo TodoResponse = todoService.deleteTodo(1L);
+        assertThat(TodoResponse.getId(), is(1L));
+        assertThat(TodoResponse.getContent(), is("todo1"));
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoRepo).delete(Matchers.any(Todo.class));
+    }
+
+    @Test
+    public void shouldThrowTodoExceptionWhenDeleteNonExistTodoInDb() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo id 1 is not found");
+        todoService.deleteTodo(1L);
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoRepo, never()).delete(anyLong());
     }
 }

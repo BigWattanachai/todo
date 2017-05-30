@@ -19,6 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -107,5 +108,17 @@ public class TodoControllerTest {
                 .andExpect(status().isOk());
 
         verify(todoService).updateTodo(anyLong(),any(Todo.class));
+    }
+
+    @Test
+    public void shouldReturnTodoWhenDeleteExistingTodoInDb() throws Exception {
+        when(todoService.deleteTodo(anyLong())).thenReturn(todo1);
+
+        mvc.perform(delete("/api/v1/todos/1"))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("todo1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).deleteTodo(anyLong());
     }
 }

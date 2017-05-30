@@ -32,13 +32,20 @@ public class TodoService {
 
     public Todo updateTodo(Long id, Todo todoUpdate) {
         Todo todo = Optional.ofNullable(todoRepo.findOne(id))
-                .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.USER_NOT_FOUND.getMsg(), id)));
+                .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_NOT_FOUND.getMsg(), id)));
         todo.setContent(todoUpdate.getContent());
         return todoRepo.saveAndFlush(todo);
     }
 
     public Todo getTodoById(Long id) {
         return Optional.ofNullable(todoRepo.findOne(id))
-                .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.USER_NOT_FOUND.getMsg(), id)));
+                .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_NOT_FOUND.getMsg(), id)));
+    }
+
+    public Todo deleteTodo(Long id) {
+        Todo todo = Optional.ofNullable(todoRepo.findOne(id))
+                .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_NOT_FOUND.getMsg(), id)));
+        todoRepo.delete(todo);
+        return todo;
     }
 }

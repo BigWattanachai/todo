@@ -3,6 +3,7 @@ package com.ascend.todolist.controllers;
 import com.ascend.todolist.entities.Todo;
 import com.ascend.todolist.services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,5 +48,8 @@ public class TodoController {
         return todoService.getTodoById(id);
     }
 
-
+    @DeleteMapping("/todos/{id}")
+    public Todo deleteTodoById(@PathVariable(value = "id") Long id) {
+        return todoService.deleteTodo(id);
+    }
 }
