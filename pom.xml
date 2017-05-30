@@ -79,6 +79,7 @@
 							<exclude>com/ascend/todolist/entities/**</exclude>
 							<exclude>com/ascend/todolist/repositories/**</exclude>
 							<exclude>com/ascend/todolist/constants/**</exclude>
+							<exclude>com/ascend/todolist/controllers/GlobalControllerExceptionHandler*</exclude>
 						</excludes>
 					</instrumentation>
 				</configuration>
