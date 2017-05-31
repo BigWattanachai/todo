@@ -9,17 +9,13 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.ManyToOne;
 
 /**
- * Created by BiG on 5/30/2017 AD.
+ * Created by BiG on 5/31/2017 AD.
  */
 @Entity
 @Getter
@@ -28,16 +24,13 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(callSuper = false)
-public class Todo extends BaseEntity {
-
+public class TodoItem extends BaseEntity {
     private String content;
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "todo")
-//    private List<TodoItem> todoItems = new ArrayList<>();
+    private Boolean complete;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "todo")
-    private List<TodoItem> todoItems= new ArrayList<>();
-
+    @ManyToOne
+    @JoinColumn(name = "todo_id", nullable = false)
+    @JsonIgnore
+    Todo todo;
 }

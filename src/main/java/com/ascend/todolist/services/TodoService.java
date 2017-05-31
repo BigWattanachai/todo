@@ -2,7 +2,9 @@ package com.ascend.todolist.services;
 
 import com.ascend.todolist.constants.ErrorMsgEnum;
 import com.ascend.todolist.entities.Todo;
+import com.ascend.todolist.entities.TodoItem;
 import com.ascend.todolist.exceptions.TodoNotFoundException;
+import com.ascend.todolist.repositories.TodoItemRepo;
 import com.ascend.todolist.repositories.TodoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,12 @@ import java.util.Optional;
 public class TodoService {
     private TodoRepo todoRepo;
 
+    private TodoItemRepo todoItemRepo;
+
     @Autowired
-    public TodoService(TodoRepo todoRepo) {
+    public TodoService(TodoRepo todoRepo, TodoItemRepo todoItemRepo) {
         this.todoRepo = todoRepo;
+        this.todoItemRepo = todoItemRepo;
     }
 
     public List<Todo> getAllTodo() {
@@ -47,5 +52,18 @@ public class TodoService {
                 .orElseThrow(() -> new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_NOT_FOUND.getMsg(), id)));
         todoRepo.delete(todo);
         return todo;
+    }
+
+    public TodoItem createTodoItem(Long todoId, TodoItem todoItem) {
+        Todo todo = Optional.ofNullable(todoRepo.findOne(todoId)).orElseThrow(() ->
+                new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_NOT_FOUND.getMsg(), todoId)));
+
+        todoItem.setTodo(todo);
+        return todoItemRepo.saveAndFlush(todoItem);
+    }
+
+    public TodoItem getTodoItem(Long id) {
+        return Optional.ofNullable(todoItemRepo.findOne(id)).orElseThrow(() ->
+                new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_ITEM_NOT_FOUND.getMsg(), id)));
     }
 }

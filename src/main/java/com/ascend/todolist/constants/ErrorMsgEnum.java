@@ -8,7 +8,8 @@ import lombok.Getter;
  */
 @Getter
 public enum ErrorMsgEnum {
-    TODO_NOT_FOUND("Todo id %s is not found");
+    TODO_NOT_FOUND("Todo id %s is not found"),
+    TODO_ITEM_NOT_FOUND("Todo item id %s is not found");
 
     private final String msg;
 

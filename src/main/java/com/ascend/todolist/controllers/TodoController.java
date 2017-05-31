@@ -1,6 +1,7 @@
 package com.ascend.todolist.controllers;
 
 import com.ascend.todolist.entities.Todo;
+import com.ascend.todolist.entities.TodoItem;
 import com.ascend.todolist.services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,5 +52,15 @@ public class TodoController {
     @DeleteMapping("/todos/{id}")
     public Todo deleteTodoById(@PathVariable(value = "id") Long id) {
         return todoService.deleteTodo(id);
+    }
+
+    @PostMapping("/todos/{todoId}/items")
+    public TodoItem createTodoItem(@PathVariable(value = "todoId") Long todoId, @Valid @RequestBody TodoItem todoItem) {
+        return todoService.createTodoItem(todoId, todoItem);
+    }
+
+    @GetMapping("/todos/items/{id}")
+    public TodoItem getTodoItem(@PathVariable(value = "id") Long id) {
+        return todoService.getTodoItem(id);
     }
 }

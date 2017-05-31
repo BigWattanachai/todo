@@ -1,7 +1,9 @@
 package com.ascend.todolist.services;
 
 import com.ascend.todolist.entities.Todo;
+import com.ascend.todolist.entities.TodoItem;
 import com.ascend.todolist.exceptions.TodoNotFoundException;
+import com.ascend.todolist.repositories.TodoItemRepo;
 import com.ascend.todolist.repositories.TodoRepo;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -34,16 +37,22 @@ public class TodoServiceTest {
     @Mock
     private TodoRepo todoRepo;
 
+    @Mock
+    private TodoItemRepo todoItemRepo;
+
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
     private Todo todo1;
     private Todo todo2;
 
+    private TodoItem todoItem1;
+    private TodoItem todoItem2;
+
     @Before
     public void setUpBeforeEach() {
         MockitoAnnotations.initMocks(this);
-        todoService = new TodoService(todoRepo);
+        todoService = new TodoService(todoRepo, todoItemRepo);
 
         todo1 = new Todo();
         todo1.setContent("todo1");
@@ -51,6 +60,16 @@ public class TodoServiceTest {
         todo2 = new Todo();
         todo2.setId(2L);
         todo2.setContent("todo2");
+
+        todoItem1 = new TodoItem();
+        todoItem1.setId(1L);
+        todoItem1.setComplete(false);
+        todoItem1.setContent("item1");
+
+        todoItem2 = new TodoItem();
+        todoItem2.setId(1L);
+        todoItem2.setComplete(true);
+        todoItem2.setContent("item2");
     }
 
 
@@ -149,5 +168,54 @@ public class TodoServiceTest {
 
         verify(todoRepo).findOne(anyLong());
         verify(todoRepo, never()).delete(anyLong());
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenCreateTodoItemSuccessfully() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(todo1);
+        when(todoItemRepo.saveAndFlush(any(TodoItem.class))).thenReturn(todoItem1);
+
+        TodoItem todoItem = todoService.createTodoItem(1L, todoItem1);
+        assertThat(todoItem.getId(), is(1L));
+        assertThat(todoItem.getContent(), is("item1"));
+        assertFalse(todoItem.getComplete());
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoItemRepo).saveAndFlush(any(TodoItem.class));
+    }
+
+    @Test
+    public void shouldThrowTodoItemExceptionWhenCreateItemWithNonExistTodoInDb() throws Exception {
+        when(todoRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo id 1 is not found");
+        todoService.createTodoItem(1L, todoItem1);
+
+        verify(todoRepo).findOne(anyLong());
+        verify(todoItemRepo, never()).saveAndFlush(any(TodoItem.class));
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenGetExistingTodoItemWithId() throws Exception {
+        when(todoItemRepo.findOne(anyLong())).thenReturn(todoItem1);
+
+        TodoItem todoItem = todoService.getTodoItem(1L);
+        assertThat(todoItem.getId(), is(1L));
+        assertThat(todoItem.getContent(), is("item1"));
+        assertFalse(todoItem.getComplete());
+
+        verify(todoItemRepo).findOne(anyLong());
+    }
+
+    @Test
+    public void shouldThrowTodoItemExceptionWhenGetNonExistItemInDb() throws Exception {
+        when(todoItemRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo item id 1 is not found");
+        todoService.getTodoItem(1L);
+
+        verify(todoItemRepo).findOne(anyLong());
     }
 }

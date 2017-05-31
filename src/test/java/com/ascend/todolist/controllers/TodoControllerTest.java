@@ -1,6 +1,7 @@
 package com.ascend.todolist.controllers;
 
 import com.ascend.todolist.entities.Todo;
+import com.ascend.todolist.entities.TodoItem;
 import com.ascend.todolist.services.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -41,16 +42,31 @@ public class TodoControllerTest {
     private Todo todo1;
     private Todo todo2;
 
+    private TodoItem todoItem1;
+    private TodoItem todoItem2;
+
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
         mvc = MockMvcBuilders.standaloneSetup(controller).build();
+
         todo1 = new Todo();
         todo1.setContent("todo1");
         todo1.setId(1L);
+
         todo2 = new Todo();
         todo2.setId(2L);
         todo2.setContent("todo2");
+
+        todoItem1 = new TodoItem();
+        todoItem1.setId(1L);
+        todoItem1.setComplete(false);
+        todoItem1.setContent("item1");
+
+        todoItem2 = new TodoItem();
+        todoItem2.setId(1L);
+        todoItem2.setComplete(true);
+        todoItem2.setContent("item2");
     }
 
     @Test
@@ -95,10 +111,9 @@ public class TodoControllerTest {
         verify(todoService).getTodoById(anyLong());
     }
 
-
     @Test
     public void shouldReturnTodoWhenUpdateExistingTodoSuccessfully() throws Exception {
-        when(todoService.updateTodo(anyLong(),any(Todo.class))).thenReturn(todo1);
+        when(todoService.updateTodo(anyLong(), any(Todo.class))).thenReturn(todo1);
 
         mvc.perform(put("/api/v1/todos/1")
                 .content(mapper.writeValueAsString(todo1))
@@ -107,7 +122,7 @@ public class TodoControllerTest {
                 .andExpect(jsonPath("$.content", is("todo1")))
                 .andExpect(status().isOk());
 
-        verify(todoService).updateTodo(anyLong(),any(Todo.class));
+        verify(todoService).updateTodo(anyLong(), any(Todo.class));
     }
 
     @Test
@@ -120,5 +135,31 @@ public class TodoControllerTest {
                 .andExpect(status().isOk());
 
         verify(todoService).deleteTodo(anyLong());
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenCreateTodoItemSuccessfully() throws Exception {
+        when(todoService.createTodoItem(anyLong(), any(TodoItem.class))).thenReturn(todoItem1);
+
+        mvc.perform(post("/api/v1/todos/1/items")
+                .content(mapper.writeValueAsString(todoItem1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("item1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).createTodoItem(anyLong(), any(TodoItem.class));
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenGetExistingTodoItemWithId() throws Exception {
+        when(todoService.getTodoItem(anyLong())).thenReturn(todoItem1);
+
+        mvc.perform(get("/api/v1/todos/items/1"))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("item1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).getTodoItem(anyLong());
     }
 }
