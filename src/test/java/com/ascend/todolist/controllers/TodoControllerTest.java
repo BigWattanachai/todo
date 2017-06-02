@@ -43,7 +43,6 @@ public class TodoControllerTest {
     private Todo todo2;
 
     private TodoItem todoItem1;
-    private TodoItem todoItem2;
 
     @Before
     public void beforeEach() {
@@ -62,11 +61,6 @@ public class TodoControllerTest {
         todoItem1.setId(1L);
         todoItem1.setComplete(false);
         todoItem1.setContent("item1");
-
-        todoItem2 = new TodoItem();
-        todoItem2.setId(1L);
-        todoItem2.setComplete(true);
-        todoItem2.setContent("item2");
     }
 
     @Test
@@ -161,5 +155,17 @@ public class TodoControllerTest {
                 .andExpect(status().isOk());
 
         verify(todoService).getTodoItem(anyLong());
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenDeleteExistingTodoItemWithId() throws Exception {
+        when(todoService.deleteTodoItem(anyLong())).thenReturn(todoItem1);
+
+        mvc.perform(delete("/api/v1/todos/items/1"))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("item1")))
+                .andExpect(status().isOk());
+
+        verify(todoService).deleteTodoItem(anyLong());
     }
 }

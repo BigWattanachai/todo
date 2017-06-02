@@ -63,4 +63,9 @@ public class TodoController {
     public TodoItem getTodoItem(@PathVariable(value = "id") Long id) {
         return todoService.getTodoItem(id);
     }
+
+    @DeleteMapping("/todos/items/{id}")
+    public TodoItem deleteTodoItem(@PathVariable(value = "id") Long todoItem) {
+        return todoService.deleteTodoItem(todoItem);
+    }
 }

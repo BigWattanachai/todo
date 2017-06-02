@@ -47,7 +47,6 @@ public class TodoServiceTest {
     private Todo todo2;
 
     private TodoItem todoItem1;
-    private TodoItem todoItem2;
 
     @Before
     public void setUpBeforeEach() {
@@ -65,11 +64,6 @@ public class TodoServiceTest {
         todoItem1.setId(1L);
         todoItem1.setComplete(false);
         todoItem1.setContent("item1");
-
-        todoItem2 = new TodoItem();
-        todoItem2.setId(1L);
-        todoItem2.setComplete(true);
-        todoItem2.setContent("item2");
     }
 
 
@@ -215,6 +209,31 @@ public class TodoServiceTest {
         expectedEx.expect(TodoNotFoundException.class);
         expectedEx.expectMessage("Todo item id 1 is not found");
         todoService.getTodoItem(1L);
+
+        verify(todoItemRepo).findOne(anyLong());
+    }
+
+    @Test
+    public void shouldReturnTodoItemWhenDeleteExistingTodoItemWithId() throws Exception {
+        when(todoItemRepo.findOne(anyLong())).thenReturn(todoItem1);
+        doNothing().when(todoItemRepo).delete(Matchers.any(TodoItem.class));
+
+        TodoItem todoItem = todoService.deleteTodoItem(1L);
+        assertThat(todoItem.getId(), is(1L));
+        assertThat(todoItem.getContent(), is("item1"));
+        assertFalse(todoItem.getComplete());
+
+        verify(todoItemRepo).findOne(anyLong());
+        verify(todoItemRepo).delete(Matchers.any(TodoItem.class));
+    }
+
+    @Test
+    public void shouldThrowTodoItemExceptionWhenDeleteNonExistItemInDb() throws Exception {
+        when(todoItemRepo.findOne(anyLong())).thenReturn(null);
+
+        expectedEx.expect(TodoNotFoundException.class);
+        expectedEx.expectMessage("Todo item id 1 is not found");
+        todoService.deleteTodoItem(1L);
 
         verify(todoItemRepo).findOne(anyLong());
     }

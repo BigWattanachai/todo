@@ -66,4 +66,12 @@ public class TodoService {
         return Optional.ofNullable(todoItemRepo.findOne(id)).orElseThrow(() ->
                 new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_ITEM_NOT_FOUND.getMsg(), id)));
     }
+
+    public TodoItem deleteTodoItem(Long id) {
+        TodoItem todoItem = Optional.ofNullable(todoItemRepo.findOne(id)).orElseThrow(() ->
+                new TodoNotFoundException(String.format(ErrorMsgEnum.TODO_ITEM_NOT_FOUND.getMsg(), id)));
+        todoItemRepo.delete(todoItem);
+        return todoItem;
+
+    }
 }

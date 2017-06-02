@@ -3,6 +3,7 @@ package com.ascend.todolist.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,9 +19,7 @@ import javax.persistence.ManyToOne;
  * Created by BiG on 5/31/2017 AD.
  */
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(callSuper = false)

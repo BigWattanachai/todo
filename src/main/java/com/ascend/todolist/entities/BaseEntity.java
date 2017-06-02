@@ -1,8 +1,6 @@
 package com.ascend.todolist.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -17,9 +15,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 /**
  * Created by BiG on 5/31/2017 AD.
  */
-@Getter
-@Setter
-@ToString
+@Data
 @MappedSuperclass
 class BaseEntity {
     @Id
