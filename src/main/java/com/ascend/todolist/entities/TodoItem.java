@@ -5,13 +5,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -21,7 +16,6 @@ import javax.persistence.ManyToOne;
 @Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(callSuper = false)
 public class TodoItem extends BaseEntity {
     private String content;
