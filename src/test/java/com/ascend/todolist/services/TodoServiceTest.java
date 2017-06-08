@@ -71,9 +71,9 @@ public class TodoServiceTest {
     public void shouldReturnTodoWhenCreateNewTodoSuccessfully() throws Exception {
         when(todoRepo.saveAndFlush(Matchers.any(Todo.class))).thenReturn(todo1);
 
-        Todo TodoCreated = todoService.createTodo(todo1);
-        assertThat(TodoCreated.getContent(), is("todo1"));
-        assertThat(TodoCreated.getId(), is(1L));
+        Todo todoCreated = todoService.createTodo(todo1);
+        assertThat(todoCreated.getContent(), is("todo1"));
+        assertThat(todoCreated.getId(), is(1L));
 
         verify(todoRepo).saveAndFlush(Matchers.any(Todo.class));
     }
@@ -82,12 +82,12 @@ public class TodoServiceTest {
     public void shouldReturnAllTodoWhenGetAllExistingTodoInDb() throws Exception {
         when(todoRepo.findAll()).thenReturn(Arrays.asList(todo1, todo2));
 
-        List<Todo> TodoList = todoService.getAllTodo();
-        assertThat(TodoList.size(), is(2));
-        assertThat(TodoList.get(0).getId(), is(1L));
-        assertThat(TodoList.get(0).getContent(), is("todo1"));
-        assertThat(TodoList.get(1).getId(), is(2L));
-        assertThat(TodoList.get(1).getContent(), is("todo2"));
+        List<Todo> todoList = todoService.getAllTodo();
+        assertThat(todoList.size(), is(2));
+        assertThat(todoList.get(0).getId(), is(1L));
+        assertThat(todoList.get(0).getContent(), is("todo1"));
+        assertThat(todoList.get(1).getId(), is(2L));
+        assertThat(todoList.get(1).getContent(), is("todo2"));
 
         verify(todoRepo).findAll();
     }
@@ -96,9 +96,9 @@ public class TodoServiceTest {
     public void shouldReturnTodoWhenGetExistingTodoInDbWithId() throws Exception {
         when(todoRepo.findOne(anyLong())).thenReturn(todo1);
 
-        Todo TodoResponse = todoService.getTodoById(1L);
-        assertThat(TodoResponse.getContent(), is("todo1"));
-        assertThat(TodoResponse.getId(), is(1L));
+        Todo todoResponse = todoService.getTodoById(1L);
+        assertThat(todoResponse.getContent(), is("todo1"));
+        assertThat(todoResponse.getId(), is(1L));
 
         verify(todoRepo).findOne(anyLong());
     }
@@ -144,9 +144,9 @@ public class TodoServiceTest {
         when(todoRepo.findOne(anyLong())).thenReturn(todo1);
         doNothing().when(todoRepo).delete(Matchers.any(Todo.class));
 
-        Todo TodoResponse = todoService.deleteTodo(1L);
-        assertThat(TodoResponse.getId(), is(1L));
-        assertThat(TodoResponse.getContent(), is("todo1"));
+        Todo todoresponse = todoService.deleteTodo(1L);
+        assertThat(todoresponse.getId(), is(1L));
+        assertThat(todoresponse.getContent(), is("todo1"));
 
         verify(todoRepo).findOne(anyLong());
         verify(todoRepo).delete(Matchers.any(Todo.class));
