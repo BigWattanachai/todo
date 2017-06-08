@@ -20,7 +20,6 @@ import java.util.List;
 @Entity
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(callSuper = false)
 public class Todo extends BaseEntity {
 
