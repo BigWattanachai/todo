@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -39,10 +40,8 @@ public class TodoListApplication {
     @PostConstruct
     void init() {
         System.out.println("=== ConfigurationService =====");
-        if (configurationService.getDemoNumberMap() != null) {
-            configurationService.getDemoNumberMap()
-                    .forEach((k, v) -> System.out.println("Key : " + k + " Value : " + v));
-        }
+        Optional.ofNullable(configurationService.getDemoNumberMap()).ifPresent(demoNumbers
+                -> demoNumbers.forEach((k, v) -> System.out.println("Key : " + k + " Value : " + v)));
         System.out.println("=================");
         System.out.println("=== @Value =====");
         System.out.println(configImageUrl);
@@ -57,7 +56,6 @@ public class TodoListApplication {
 
 @ConfigurationProperties(prefix = "spring.my")
 @Configuration
-
 @Data
 class MyConfig {
     String secret;
