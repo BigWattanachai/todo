@@ -4,6 +4,8 @@ import com.ascend.todolist.entities.Todo;
 import com.ascend.todolist.entities.TodoItem;
 import com.ascend.todolist.services.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,8 +57,9 @@ public class TodoController {
     }
 
     @PostMapping("/todos/{todoId}/items")
-    public TodoItem createTodoItem(@PathVariable(value = "todoId") Long todoId, @Valid @RequestBody TodoItem todoItem) {
-        return todoService.createTodoItem(todoId, todoItem);
+    public ResponseEntity<TodoItem> createTodoItem(@PathVariable(value = "todoId") Long todoId, @Valid @RequestBody
+            TodoItem todoItem) {
+        return new ResponseEntity<>(todoService.createTodoItem(todoId, todoItem), HttpStatus.CREATED);
     }
 
     @GetMapping("/todos/items/{id}")

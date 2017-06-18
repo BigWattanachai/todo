@@ -140,7 +140,7 @@ public class TodoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.content", is("item1")))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(todoService).createTodoItem(anyLong(), any(TodoItem.class));
     }
